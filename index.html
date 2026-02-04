@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexed Arcade — Speel & Verdien Coins</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">N</div>
+      <div>
+        <strong>Nexed Arcade</strong>
+        <span>Speel mini-games. Verdien virtuele coins.</span>
+      </div>
+    </div>
+    <div class="wallet">
+      <div class="wallet-info">
+        <span>Wallet</span>
+        <strong id="coinBalance">0</strong>
+      </div>
+      <button class="btn btn-outline" id="dailyBonus">Daily bonus</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="sidebar">
+      <h2>Game Hub</h2>
+      <p>Kies je game en klim omhoog op de leaderboard.</p>
+      <div class="game-list">
+        <button class="game-btn active" data-game="slot">Slot Machine</button>
+        <button class="game-btn" data-game="driving">Drive Rush 2D</button>
+        <button class="game-btn" data-game="memory">Memory</button>
+        <button class="game-btn" data-game="dash">Mini Dash</button>
+        <button class="game-btn" data-game="plinko">Plinko</button>
+        <button class="game-btn" data-game="grid">Treasure Grid</button>
+        <button class="game-btn" data-game="crash">Crash Gamble</button>
+        <button class="game-btn" data-game="dice">Dice Duel</button>
+        <button class="game-btn" data-game="roulette">Roulette Glow</button>
+        <button class="game-btn" data-game="coinflip">Coin Flip</button>
+      </div>
+      <div class="rules">
+        <h3>Belangrijk</h3>
+        <p>Alle coins zijn virtueel. Geen echte uitbetalingen of geldtransacties.</p>
+      </div>
+
+      <div class="shop">
+        <h3>Shop</h3>
+        <p>Koop power-ups, thema’s en nepgeld (simulatie).</p>
+        <div class="shop-section">
+          <h4>Power-ups</h4>
+          <button class="shop-item" data-buy="powerup" data-id="dashShield" data-cost="120">
+            Dash Shield — 120 coins
+          </button>
+          <button class="shop-item" data-buy="powerup" data-id="driveMagnet" data-cost="150">
+            Drive Magnet — 150 coins
+          </button>
+          <button class="shop-item" data-buy="powerup" data-id="plinkoLuck" data-cost="200">
+            Plinko Luck — 200 coins
+          </button>
+        </div>
+
+        <div class="shop-section">
+          <h4>Boosts</h4>
+          <button class="shop-item" data-buy="boost" data-id="extraLife" data-cost="180">
+            Extra Life — 180 coins
+          </button>
+          <button class="shop-item" data-buy="boost" data-id="slowMo" data-cost="160">
+            Slow-Mo Token — 160 coins
+          </button>
+          <button class="shop-item" data-buy="boost" data-id="winBoost" data-cost="220">
+            Win Boost — 220 coins
+          </button>
+        </div>
+
+        <div class="shop-section">
+          <h4>Achtergronden</h4>
+          <button class="shop-item" data-buy="theme" data-id="theme-neon" data-cost="300">
+            Neon City — 300 coins
+          </button>
+          <button class="shop-item" data-buy="theme" data-id="theme-forest" data-cost="300">
+            Pixel Forest — 300 coins
+          </button>
+          <button class="shop-item" data-buy="theme" data-id="theme-sunset" data-cost="300">
+            Sunset Grid — 300 coins
+          </button>
+        </div>
+
+        <div class="shop-section">
+          <h4>Cosmetics</h4>
+          <button class="shop-item" data-buy="cosmetic" data-id="avatar-arcade" data-cost="120">
+            Arcade Avatar — 120 coins
+          </button>
+          <button class="shop-item" data-buy="cosmetic" data-id="badge-legend" data-cost="140">
+            Legend Badge — 140 coins
+          </button>
+          <button class="shop-item" data-buy="cosmetic" data-id="trail-neon" data-cost="160">
+            Neon Trail — 160 coins
+          </button>
+        </div>
+
+        <div class="shop-section">
+          <h4>Profile frames</h4>
+          <button class="shop-item" data-buy="frame" data-id="frame-gold" data-cost="200">
+            Gold Frame — 200 coins
+          </button>
+          <button class="shop-item" data-buy="frame" data-id="frame-aurora" data-cost="220">
+            Aurora Frame — 220 coins
+          </button>
+        </div>
+
+        <div class="shop-section">
+          <h4>Sound packs</h4>
+          <button class="shop-item" data-buy="sound" data-id="sound-arcade" data-cost="130">
+            Arcade Clicks — 130 coins
+          </button>
+          <button class="shop-item" data-buy="sound" data-id="sound-synth" data-cost="150">
+            Synth Pack — 150 coins
+          </button>
+        </div>
+
+        <div class="shop-section">
+          <h4>Limited skins</h4>
+          <button class="shop-item" data-buy="skin" data-id="skin-cyber" data-cost="260">
+            Cyber Runner — 260 coins
+          </button>
+          <button class="shop-item" data-buy="skin" data-id="skin-crimson" data-cost="260">
+            Crimson Bolt — 260 coins
+          </button>
+        </div>
+
+        <div class="shop-section">
+          <h4>VIP</h4>
+          <button class="shop-item" data-buy="vip" data-id="vip-pass" data-cost="500">
+            VIP Pass — 500 coins
+          </button>
+          <small class="shop-note">VIP geeft extra daily bonus (simulatie).</small>
+        </div>
+
+        <div class="shop-section">
+          <h4>Loot boxes</h4>
+          <button class="shop-item" data-buy="loot" data-id="loot-basic" data-cost="180">
+            Basic Loot Box — 180 coins
+          </button>
+          <button class="shop-item" data-buy="loot" data-id="loot-epic" data-cost="320">
+            Epic Loot Box — 320 coins
+          </button>
+        </div>
+
+        <div class="shop-section">
+          <h4>Coin packs</h4>
+          <button class="shop-item" data-buy="pack" data-amount="250" data-price="3,99">
+            250 Nexie Coins — €3,99
+          </button>
+          <button class="shop-item" data-buy="pack" data-amount="500" data-price="6,99">
+            500 Nexie Coins — €6,99
+          </button>
+          <button class="shop-item" data-buy="pack" data-amount="1000" data-price="11,99">
+            1000 Nexie Coins — €11,99
+          </button>
+          <button class="shop-item" data-buy="pack" data-amount="2500" data-price="24,99">
+            2500 Nexie Coins — €24,99
+          </button>
+          <button class="shop-item" data-buy="pack" data-amount="6000" data-price="49,99">
+            6000 Nexie Coins — €49,99
+          </button>
+          <button class="shop-item" data-buy="pack" data-amount="10000" data-price="79,99">
+            10.000 Nexie Coins — €79,99
+          </button>
+          <small class="shop-note">Simulatie: deze knoppen verhogen altijd je virtuele coins.</small>
+        </div>
+
+        <div class="inventory">
+          <h4>Inventory</h4>
+          <div class="inventory-group">
+            <div class="inventory-title">Cosmetics</div>
+            <div class="inventory-list" id="inventoryCosmetics">Nog geen items.</div>
+          </div>
+          <div class="inventory-group">
+            <div class="inventory-title">Overig</div>
+            <div class="inventory-list" id="inventoryOther">Nog geen items.</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <section class="arena">
+      <div class="arena-header">
+        <div>
+          <h1 id="gameTitle">Slot Machine</h1>
+          <p id="gameSubtitle">Draai de reels en pak de jackpot.</p>
+        </div>
+        <div class="arena-meta">
+          <span id="gameTag">Casino</span>
+          <strong id="gameStatus">Klaar om te spelen</strong>
+        </div>
+      </div>
+
+      <div class="game-panel" id="slot" data-panel>
+        <div class="slot-reels">
+          <div class="reel" id="reel1">7</div>
+          <div class="reel" id="reel2">7</div>
+          <div class="reel" id="reel3">7</div>
+        </div>
+        <div class="panel-actions">
+          <button class="btn btn-primary" id="spinSlot">Spin (kost 5)</button>
+          <span class="hint">3x gelijk = +50 coins</span>
+        </div>
+      </div>
+
+      <div class="game-panel hidden" id="driving" data-panel>
+        <canvas id="driveCanvas" width="720" height="360"></canvas>
+        <div class="panel-actions">
+          <button class="btn btn-primary" id="startDrive">Start Drive</button>
+          <span class="hint">Bestuur met A/D of pijltjes. Spring met spatie.</span>
+        </div>
+      </div>
+
+      <div class="game-panel hidden" id="memory" data-panel>
+        <div class="memory-grid" id="memoryGrid"></div>
+        <div class="panel-actions">
+          <button class="btn btn-primary" id="resetMemory">Nieuwe ronde</button>
+          <span class="hint">Match alle paren voor +80 coins.</span>
+        </div>
+      </div>
+
+      <div class="game-panel hidden" id="dash" data-panel>
+        <canvas id="dashCanvas" width="720" height="280"></canvas>
+        <div class="panel-actions">
+          <button class="btn btn-primary" id="startDash">Start Dash</button>
+          <span class="hint">Spring met spatie. Haal 200m voor bonus.</span>
+        </div>
+      </div>
+
+      <div class="game-panel hidden" id="plinko" data-panel>
+        <canvas id="plinkoCanvas" width="720" height="420"></canvas>
+        <div class="panel-actions">
+          <button class="btn btn-primary" id="dropPlinko">Drop (kost 5)</button>
+          <span class="hint">Val in multipliers om coins te verdienen.</span>
+        </div>
+      </div>
+
+      <div class="game-panel hidden" id="grid" data-panel>
+        <div class="grid-header">
+          <div class="grid-stats">
+            <span>Ronde winst</span>
+            <strong id="gridEarnings">0</strong>
+          </div>
+          <div class="grid-actions">
+            <input id="gridBet" type="number" min="1" value="10">
+            <button class="btn btn-primary" id="startGrid">Start ronde</button>
+            <button class="btn btn-outline" id="cashoutGrid" disabled>Cash out</button>
+          </div>
+        </div>
+        <div class="grid-game" id="treasureGrid"></div>
+        <div class="panel-actions">
+          <button class="btn btn-outline" id="resetGrid">Nieuw bord</button>
+          <span class="hint">Kleiner veld. 1 bom, 1 grote schat. Cash out om winst te pakken.</span>
+        </div>
+      </div>
+
+      <div class="game-panel hidden" id="crash" data-panel>
+        <div class="crash-panel">
+          <div class="crash-display">
+            <span>Multiplier</span>
+            <strong id="crashMultiplier">1.00x</strong>
+          </div>
+          <div class="crash-actions">
+            <input id="crashBet" type="number" min="1" value="10">
+            <button class="btn btn-primary" id="startCrash">Start</button>
+            <button class="btn btn-outline" id="cashOut" disabled>Cash out</button>
+          </div>
+          <div class="crash-log" id="crashLog">Plaats een bet en start.</div>
+        </div>
+      </div>
+
+      <div class="game-panel hidden" id="dice" data-panel>
+        <div class="dice-panel">
+          <div class="dice" id="diceValue">?</div>
+          <div class="dice-options">
+            <button class="btn btn-outline" data-guess="low">Onder 4</button>
+            <button class="btn btn-outline" data-guess="high">4 of hoger</button>
+          </div>
+          <button class="btn btn-primary" id="rollDice">Roll (kost 3)</button>
+        </div>
+      </div>
+
+      <div class="game-panel hidden" id="roulette" data-panel>
+        <div class="roulette-panel">
+          <div class="roulette-wheel" id="rouletteWheel">🎯</div>
+          <div class="roulette-options">
+            <button class="btn btn-outline" data-color="red">Rood</button>
+            <button class="btn btn-outline" data-color="black">Zwart</button>
+            <button class="btn btn-outline" data-color="gold">Goud</button>
+          </div>
+          <button class="btn btn-primary" id="spinRoulette">Spin (kost 4)</button>
+        </div>
+      </div>
+
+      <div class="game-panel hidden" id="coinflip" data-panel>
+        <div class="coinflip-panel">
+          <div class="coin" id="coinFace">N</div>
+          <div class="coinflip-options">
+            <button class="btn btn-outline" data-face="N">N</button>
+            <button class="btn btn-outline" data-face="X">X</button>
+          </div>
+          <button class="btn btn-primary" id="flipCoin">Flip (kost 2)</button>
+        </div>
+      </div>
+
+      <div class="leaderboard">
+        <h3>Top Players</h3>
+        <div class="leader-list" id="leaderList"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

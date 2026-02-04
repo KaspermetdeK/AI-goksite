@@ -1,0 +1,2 @@
+Een gokwebsite met een ingame geldsysteem en  minigames om geld mee te verdienen.
+er komt ook een shop waar je cosmetics kan kopen en upgrades voor bij het gokken.
