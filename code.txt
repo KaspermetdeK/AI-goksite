@@ -1,0 +1,45 @@
+```mermaid
+flowchart TD
+  A[Speler] --> B[Nexed Arcade UI]
+  B --> C[Game Hub]
+  B --> D[Shop]
+  B --> E[Inventory]
+  B --> F[Leaderboard]
+
+  C --> C1[Mini Dash]
+  C --> C2[Drive Rush 2D]
+  C --> C3[Memory]
+  C --> C4[Plinko]
+  C --> C5[Crash Gamble]
+  C --> C6[Treasure Grid]
+
+  D --> D1[Power-ups]
+  D --> D2[Cosmetics/Themes]
+  D --> D3[Loot Boxes]
+  D --> D4[Coin Packs (simulatie)]
+```
+
+```mermaid
+sequenceDiagram
+  participant U as Speler
+  participant UI as Nexed Arcade (UI)
+  participant LS as LocalStorage
+  participant RNG as RNG Engine
+
+  U->>UI: Start game / play
+  UI->>RNG: Genereer uitkomst
+  RNG-->>UI: Resultaat
+  UI->>LS: Update coins, stats
+  UI-->>U: Toon reward/feedback
+
+  U->>UI: Koop item / loot box
+  UI->>LS: Check inventory + coins
+  alt genoeg coins
+    UI->>RNG: Loot reward
+    RNG-->>UI: Item (rarity)
+    UI->>LS: Save inventory + coins
+    UI-->>U: Toon item + rarity
+  else te weinig coins
+    UI-->>U: Error message
+  end
+```

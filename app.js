@@ -1,4 +1,4 @@
-﻿const balanceEl = document.getElementById("coinBalance");
+const balanceEl = document.getElementById("coinBalance");
 const dailyBonusBtn = document.getElementById("dailyBonus");
 
 const games = {
@@ -78,6 +78,31 @@ const themeKey = "nexed_arcade_theme";
 let inventory = JSON.parse(localStorage.getItem(inventoryKey) || "[]");
 let vipActive = localStorage.getItem(vipKey) === "true";
 
+const shopItemsKey = "nexed_arcade_shop";
+let shopItems = JSON.parse(localStorage.getItem(shopItemsKey) || JSON.stringify([
+  { id: "dashShield", name: "Dash Shield", type: "powerup", cost: 120, emoji: "⚡" },
+  { id: "driveMagnet", name: "Drive Magnet", type: "powerup", cost: 150, emoji: "🧲" },
+  { id: "plinkoLuck", name: "Plinko Luck", type: "powerup", cost: 200, emoji: "🎯" },
+  { id: "extraLife", name: "Extra Life", type: "boost", cost: 180, emoji: "❤️" },
+  { id: "slowMo", name: "Slow-Mo Token", type: "boost", cost: 160, emoji: "🕒" },
+  { id: "winBoost", name: "Win Boost", type: "boost", cost: 220, emoji: "🚀" },
+  { id: "theme-neon", name: "Neon City", type: "theme", cost: 300, emoji: "🌌" },
+  { id: "theme-forest", name: "Pixel Forest", type: "theme", cost: 300, emoji: "🌲" },
+  { id: "theme-sunset", name: "Sunset Grid", type: "theme", cost: 300, emoji: "🌅" },
+  { id: "avatar-arcade", name: "Arcade Avatar", type: "cosmetic", cost: 120, emoji: "🕹️" },
+  { id: "badge-legend", name: "Legend Badge", type: "cosmetic", cost: 140, emoji: "🏅" },
+  { id: "trail-neon", name: "Neon Trail", type: "cosmetic", cost: 160, emoji: "✨" },
+  { id: "frame-gold", name: "Gold Frame", type: "frame", cost: 200, emoji: "🖼️" },
+  { id: "frame-aurora", name: "Aurora Frame", type: "frame", cost: 220, emoji: "🌈" },
+  { id: "sound-arcade", name: "Arcade Clicks", type: "sound", cost: 130, emoji: "🎛️" },
+  { id: "sound-synth", name: "Synth Pack", type: "sound", cost: 150, emoji: "🎹" },
+  { id: "skin-cyber", name: "Cyber Runner", type: "skin", cost: 260, emoji: "🧬" },
+  { id: "skin-crimson", name: "Crimson Bolt", type: "skin", cost: 260, emoji: "🔥" },
+  { id: "vip-pass", name: "VIP Pass", type: "vip", cost: 500, emoji: "👑" },
+  { id: "loot-basic", name: "Basic Loot Box", type: "loot", cost: 180, emoji: "📦" },
+  { id: "loot-epic", name: "Epic Loot Box", type: "loot", cost: 320, emoji: "💎" }
+]));
+
 const rarityClass = (rarity) => {
   const key = (rarity || "common").toLowerCase();
   return `rarity rarity-${key}`;
@@ -86,6 +111,12 @@ const rarityClass = (rarity) => {
 const saveInventory = () => {
   localStorage.setItem(inventoryKey, JSON.stringify(inventory));
   renderInventory();
+};
+
+const saveShopItems = () => {
+  localStorage.setItem(shopItemsKey, JSON.stringify(shopItems));
+  renderShop();
+  renderAdminList();
 };
 
 const normalizeInventory = () => {
@@ -99,7 +130,7 @@ const normalizeInventory = () => {
       name,
       type: "legacy",
       rarity: "common",
-      emoji: "ðŸ“¦"
+      emoji: "📦"
     }));
     saveInventory();
   }
@@ -146,6 +177,7 @@ const renderLeaderboard = () => {
 
 const inventoryCosmetics = document.getElementById("inventoryCosmetics");
 const inventoryOther = document.getElementById("inventoryOther");
+const legacyInventoryList = document.getElementById("inventoryList");
 const renderInventory = () => {
   const cosmetics = inventory.filter(item =>
     ["cosmetic", "theme", "skin", "frame"].includes(item.type)
@@ -154,23 +186,42 @@ const renderInventory = () => {
     !["cosmetic", "theme", "skin", "frame"].includes(item.type)
   );
 
-  inventoryCosmetics.innerHTML = cosmetics.length
-    ? cosmetics.map(item => `
-      <div class="inventory-item">
-        <span>${item.emoji} ${item.name}</span>
-        <em class="${rarityClass(item.rarity)}">${item.rarity}</em>
-      </div>
-    `).join("")
-    : "Nog geen items.";
-  inventoryOther.innerHTML = other.length
-    ? other.map(item => `
-      <div class="inventory-item">
-        <span>${item.emoji} ${item.name}</span>
-        <em class="${rarityClass(item.rarity)}">${item.rarity}</em>
-      </div>
-    `).join("")
-    : "Nog geen items.";
+  if (inventoryCosmetics && inventoryOther) {
+    inventoryCosmetics.innerHTML = cosmetics.length
+      ? cosmetics.map(item => `
+        <div class="inventory-item">
+          <span>${item.emoji} ${item.name}</span>
+          <em class="${rarityClass(item.rarity)}">${item.rarity}</em>
+        </div>
+      `).join("")
+      : "Nog geen items.";
+    inventoryOther.innerHTML = other.length
+      ? other.map(item => `
+        <div class="inventory-item">
+          <span>${item.emoji} ${item.name}</span>
+          <em class="${rarityClass(item.rarity)}">${item.rarity}</em>
+        </div>
+      `).join("")
+      : "Nog geen items.";
+    return;
+  }
+
+  if (legacyInventoryList) {
+    const combined = [...cosmetics, ...other];
+    legacyInventoryList.innerHTML = combined.length
+      ? combined.map(item => `
+        <div class="inventory-item">
+          <span>${item.emoji} ${item.name}</span>
+          <em class="${rarityClass(item.rarity)}">${item.rarity}</em>
+        </div>
+      `).join("")
+      : "Nog geen items.";
+  }
 };
+
+const extractItemName = (text) => (
+  text.replace(/\s+[-]\s+.*$/, "").trim()
+);
 
 const applyTheme = (themeId) => {
   document.body.classList.remove("theme-neon", "theme-forest", "theme-sunset");
@@ -224,118 +275,98 @@ window.addEventListener("keydown", (event) => {
   }
 }, { passive: false });
 
-// Shop handlers
-document.querySelectorAll(".shop-item").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    const type = btn.dataset.buy;
-    if (type === "pack") {
-      const amount = Number(btn.dataset.amount || 0);
-      const price = btn.dataset.price || "";
-      updateBalance(amount, `Pack gekocht +${amount} coins`);
-      gameStatus.textContent = `Simulatie: â‚¬${price} pack toegevoegd.`;
-      return;
-    }
+// Plinko
+const plinkoCanvas = document.getElementById("plinkoCanvas");
+const plinkoCtx = plinkoCanvas.getContext("2d");
+let plinkoBall = null;
+let plinkoDropping = false;
+const pegs = [];
+const multipliers = [0, 1, 2, 5, 2, 1, 0];
 
-    const cost = Number(btn.dataset.cost || 0);
-    const id = btn.dataset.id;
-    const itemName = btn.textContent.split("â€”")[0].trim();
-    const alreadyOwned = inventory.some(item => item.id === id);
-    if (type !== "loot" && type !== "pack" && alreadyOwned) {
-      gameStatus.textContent = "Item al in inventory.";
-      return;
-    }
-    if (type !== "loot" && type !== "pack" && !canAfford(cost)) return;
+for (let row = 0; row < 6; row++) {
+  for (let col = 0; col < 7; col++) {
+    pegs.push({
+      x: 80 + col * 90 + (row % 2) * 45,
+      y: 80 + row * 50
+    });
+  }
+}
 
-    if (type === "powerup") {
-      const added = addUniqueItem({ id, name: itemName, type, rarity: "rare", emoji: "⚡" });
-      if (added) gameStatus.textContent = "Power-up toegevoegd.";
-      return;
-    }
+const drawPlinko = () => {
+  plinkoCtx.clearRect(0, 0, plinkoCanvas.width, plinkoCanvas.height);
+  plinkoCtx.fillStyle = "#0a1020";
+  plinkoCtx.fillRect(0, 0, plinkoCanvas.width, plinkoCanvas.height);
 
-    if (type === "theme") {
-      const added = addUniqueItem({ id, name: itemName, type, rarity: "epic", emoji: "🌌" });
-      if (added) {
-        applyTheme(id);
-        gameStatus.textContent = "Theme geactiveerd.";
-      }
-      return;
-    }
+  plinkoCtx.fillStyle = "#22d3ee";
+  pegs.forEach(peg => {
+    plinkoCtx.beginPath();
+    plinkoCtx.arc(peg.x, peg.y, 6, 0, Math.PI * 2);
+    plinkoCtx.fill();
+  });
 
-    if (type === "boost") {
-      const added = addUniqueItem({ id, name: itemName, type, rarity: "rare", emoji: "🚀" });
-      if (added) gameStatus.textContent = "Boost toegevoegd.";
-      return;
-    }
+  multipliers.forEach((m, i) => {
+    plinkoCtx.fillStyle = m >= 2 ? "#f97316" : "#1f2937";
+    plinkoCtx.fillRect(40 + i * 90, plinkoCanvas.height - 40, 70, 30);
+    plinkoCtx.fillStyle = "#e5edff";
+    plinkoCtx.fillText(`${m}x`, 60 + i * 90, plinkoCanvas.height - 20);
+  });
 
-    if (type === "cosmetic") {
-      const added = addUniqueItem({ id, name: itemName, type, rarity: "common", emoji: "✨" });
-      if (added) gameStatus.textContent = "Cosmetic toegevoegd.";
-      return;
-    }
+  if (plinkoBall) {
+    plinkoCtx.fillStyle = "#a3e635";
+    plinkoCtx.beginPath();
+    plinkoCtx.arc(plinkoBall.x, plinkoBall.y, 10, 0, Math.PI * 2);
+    plinkoCtx.fill();
+  }
+};
 
-    if (type === "frame") {
-      const added = addUniqueItem({ id, name: itemName, type, rarity: "rare", emoji: "🖼️" });
-      if (added) gameStatus.textContent = "Frame toegevoegd.";
-      return;
-    }
+const updatePlinko = () => {
+  if (!plinkoBall) return;
+  plinkoBall.vy += 0.2;
+  plinkoBall.x += plinkoBall.vx;
+  plinkoBall.y += plinkoBall.vy;
 
-    if (type === "sound") {
-      const added = addUniqueItem({ id, name: itemName, type, rarity: "common", emoji: "🎛️" });
-      if (added) gameStatus.textContent = "Sound pack toegevoegd.";
-      return;
-    }
-
-    if (type === "skin") {
-      const added = addUniqueItem({ id, name: itemName, type, rarity: "epic", emoji: "🧬" });
-      if (added) gameStatus.textContent = "Skin toegevoegd.";
-      return;
-    }
-
-    if (type === "vip") {
-      if (addUniqueItem({ id, name: "VIP Pass", type, rarity: "legendary", emoji: "👑" })) {
-        vipActive = true;
-        localStorage.setItem(vipKey, "true");
-        gameStatus.textContent = "VIP actief. Daily bonus verhoogd.";
-      }
-      return;
-    }
-
-    if (type === "loot") {
-      const lootPool = [
-        { id: "dashShield", name: "Dash Shield", type: "powerup", rarity: "rare", emoji: "⚡" },
-        { id: "driveMagnet", name: "Drive Magnet", type: "powerup", rarity: "rare", emoji: "🧲" },
-        { id: "extraLife", name: "Extra Life", type: "boost", rarity: "rare", emoji: "❤️" },
-        { id: "slowMo", name: "Slow-Mo Token", type: "boost", rarity: "rare", emoji: "🕒" },
-        { id: "theme-neon", name: "Neon City", type: "theme", rarity: "epic", emoji: "🌌" },
-        { id: "theme-forest", name: "Pixel Forest", type: "theme", rarity: "epic", emoji: "🌲" },
-        { id: "skin-cyber", name: "Cyber Runner", type: "skin", rarity: "epic", emoji: "🧬" },
-        { id: "frame-gold", name: "Gold Frame", type: "frame", rarity: "legendary", emoji: "🖼️" },
-        { id: "avatar-arcade", name: "Arcade Avatar", type: "cosmetic", rarity: "common", emoji: "🕹️" },
-        { id: "badge-legend", name: "Legend Badge", type: "cosmetic", rarity: "rare", emoji: "🏅" },
-        { id: "trail-neon", name: "Neon Trail", type: "cosmetic", rarity: "epic", emoji: "✨" }
-      ];
-      const available = lootPool.filter(item => !inventory.some(existing => existing.id === item.id));
-      if (!available.length) {
-        gameStatus.textContent = "Alle loot items al in inventory.";
-        return;
-      }
-      if (!canAfford(cost)) return;
-      const reward = available[Math.floor(Math.random() * available.length)];
-      if (addUniqueItem(reward)) {
-        if (reward.type === "theme") applyTheme(reward.id);
-        gameStatus.textContent = `Loot box: ${reward.emoji} ${reward.name} (${reward.rarity})`;
-      }
-      return;
+  pegs.forEach(peg => {
+    const dx = plinkoBall.x - peg.x;
+    const dy = plinkoBall.y - peg.y;
+    const dist = Math.hypot(dx, dy);
+    if (dist < 14) {
+      plinkoBall.vx += dx * 0.05;
+      plinkoBall.vy *= -0.5;
     }
   });
+
+  if (plinkoBall.y > plinkoCanvas.height - 50) {
+    const slot = Math.min(multipliers.length - 1, Math.max(0, Math.floor((plinkoBall.x - 40) / 90)));
+    const reward = multipliers[slot] * 10;
+    updateBalance(reward, `Plinko payout +${reward}`);
+    plinkoBall = null;
+    plinkoDropping = false;
+  }
+
+  drawPlinko();
+  requestAnimationFrame(updatePlinko);
+};
+
+document.getElementById("dropPlinko").addEventListener("click", () => {
+  if (plinkoDropping) return;
+  const bet = Math.max(1, Number(document.getElementById("plinkoBet").value || 5));
+  if (!canAfford(bet)) return;
+  plinkoDropping = true;
+  plinkoBall = { x: plinkoCanvas.width / 2, y: 20, vx: (Math.random() - 0.5) * 2, vy: 1 };
+  updatePlinko();
 });
+
+drawPlinko();
 
 // Slot Machine
 const reels = [document.getElementById("reel1"), document.getElementById("reel2"), document.getElementById("reel3")];
 const spinBtn = document.getElementById("spinSlot");
+let spinning = false;
 
 spinBtn.addEventListener("click", () => {
-  if (!canAfford(5)) return;
+  if (spinning || !canAfford(5)) return;
+  spinning = true;
+  spinBtn.disabled = true;
   const values = reels.map(reel => {
     const val = Math.floor(Math.random() * 9) + 1;
     reel.textContent = val;
@@ -349,6 +380,10 @@ spinBtn.addEventListener("click", () => {
   } else {
     gameStatus.textContent = "Geen match. Probeer opnieuw.";
   }
+  setTimeout(() => {
+    spinning = false;
+    spinBtn.disabled = false;
+  }, 1000);
 });
 
 // Memory
@@ -358,7 +393,7 @@ let memoryFlipped = [];
 let memoryMatched = 0;
 
 const resetMemory = () => {
-  const symbols = ["ðŸŽ§", "ðŸŽ¸", "ðŸŽ¹", "ðŸ¥", "ðŸŽº", "ðŸŽ¤"];
+  const symbols = ["<", "<", "<", ">A", "<", "<"];
   memoryValues = [...symbols, ...symbols].sort(() => Math.random() - 0.5);
   memoryGrid.innerHTML = "";
   memoryFlipped = [];
@@ -576,83 +611,6 @@ document.getElementById("startDash").addEventListener("click", () => {
   updateDash();
 });
 
-// Plinko
-const plinkoCanvas = document.getElementById("plinkoCanvas");
-const plinkoCtx = plinkoCanvas.getContext("2d");
-let plinkoBall = null;
-const pegs = [];
-const multipliers = [0, 1, 2, 5, 2, 1, 0];
-
-for (let row = 0; row < 6; row++) {
-  for (let col = 0; col < 7; col++) {
-    pegs.push({
-      x: 80 + col * 90 + (row % 2) * 45,
-      y: 80 + row * 50
-    });
-  }
-}
-
-const drawPlinko = () => {
-  plinkoCtx.clearRect(0, 0, plinkoCanvas.width, plinkoCanvas.height);
-  plinkoCtx.fillStyle = "#0a1020";
-  plinkoCtx.fillRect(0, 0, plinkoCanvas.width, plinkoCanvas.height);
-
-  plinkoCtx.fillStyle = "#22d3ee";
-  pegs.forEach(peg => {
-    plinkoCtx.beginPath();
-    plinkoCtx.arc(peg.x, peg.y, 6, 0, Math.PI * 2);
-    plinkoCtx.fill();
-  });
-
-  multipliers.forEach((m, i) => {
-    plinkoCtx.fillStyle = m >= 2 ? "#f97316" : "#1f2937";
-    plinkoCtx.fillRect(40 + i * 90, plinkoCanvas.height - 40, 70, 30);
-    plinkoCtx.fillStyle = "#e5edff";
-    plinkoCtx.fillText(`${m}x`, 60 + i * 90, plinkoCanvas.height - 20);
-  });
-
-  if (plinkoBall) {
-    plinkoCtx.fillStyle = "#a3e635";
-    plinkoCtx.beginPath();
-    plinkoCtx.arc(plinkoBall.x, plinkoBall.y, 10, 0, Math.PI * 2);
-    plinkoCtx.fill();
-  }
-};
-
-const updatePlinko = () => {
-  if (!plinkoBall) return;
-  plinkoBall.vy += 0.2;
-  plinkoBall.x += plinkoBall.vx;
-  plinkoBall.y += plinkoBall.vy;
-
-  pegs.forEach(peg => {
-    const dx = plinkoBall.x - peg.x;
-    const dy = plinkoBall.y - peg.y;
-    const dist = Math.hypot(dx, dy);
-    if (dist < 14) {
-      plinkoBall.vx += dx * 0.05;
-      plinkoBall.vy *= -0.5;
-    }
-  });
-
-  if (plinkoBall.y > plinkoCanvas.height - 50) {
-    const slot = Math.min(multipliers.length - 1, Math.max(0, Math.floor((plinkoBall.x - 40) / 90)));
-    const reward = multipliers[slot] * 10;
-    updateBalance(reward, `Plinko payout +${reward}`);
-    plinkoBall = null;
-  }
-
-  drawPlinko();
-  requestAnimationFrame(updatePlinko);
-};
-
-document.getElementById("dropPlinko").addEventListener("click", () => {
-  if (!canAfford(5) || plinkoBall) return;
-  plinkoBall = { x: plinkoCanvas.width / 2, y: 20, vx: (Math.random() - 0.5) * 2, vy: 1 };
-  updatePlinko();
-});
-
-drawPlinko();
 
 // Treasure Grid
 const treasureGrid = document.getElementById("treasureGrid");
@@ -668,6 +626,7 @@ let gridBombIndex = 0;
 let gridBigIndex = 0;
 let gridEarnings = 0;
 let gridActive = false;
+let currentGridBet = 10;
 
 const updateGridEarnings = (amount = 0) => {
   gridEarnings = Math.max(0, gridEarnings + amount);
@@ -704,6 +663,7 @@ const endGridRound = (message) => {
 const startGridRound = () => {
   const bet = Math.max(1, Number(gridBetInput.value || 1));
   if (!canAfford(bet)) return;
+  currentGridBet = bet;
   updateGridEarnings(-gridEarnings);
   gridActive = true;
   cashoutGridBtn.disabled = false;
@@ -730,17 +690,17 @@ const revealTile = (index, btn) => {
 
   if (cell.type === "bomb") {
     btn.classList.add("bomb");
-    btn.textContent = "ðŸ’£";
+    btn.textContent = "💣";
     updateGridEarnings(-gridEarnings);
     endGridRound("Boom! Ronde verloren.");
   } else if (cell.type === "big") {
     btn.classList.add("big");
-    btn.textContent = "ðŸ’°";
-    updateGridEarnings(200);
+    btn.textContent = "💰";
+    updateGridEarnings(200 * (currentGridBet / 10));
   } else {
     btn.classList.add("good");
     btn.textContent = "+";
-    updateGridEarnings(5);
+    updateGridEarnings(5 * (currentGridBet / 10));
   }
 };
 
@@ -877,4 +837,192 @@ document.getElementById("flipCoin").addEventListener("click", () => {
 
 showGame("slot");
 
+const renderShop = () => {
+  const shopContainer = document.querySelector('.shop');
+  if (!shopContainer) return;
+  const sections = {
+    powerup: { title: 'Power-ups', items: [] },
+    boost: { title: 'Boosts', items: [] },
+    theme: { title: 'Achtergronden', items: [] },
+    cosmetic: { title: 'Cosmetics', items: [] },
+    frame: { title: 'Profile frames', items: [] },
+    sound: { title: 'Sound packs', items: [] },
+    skin: { title: 'Limited skins', items: [] },
+    vip: { title: 'VIP', items: [] },
+    loot: { title: 'Loot boxes', items: [] }
+  };
+  shopItems.forEach(item => {
+    if (sections[item.type]) {
+      sections[item.type].items.push(item);
+    }
+  });
+  let sectionHTML = '';
+  Object.keys(sections).forEach(type => {
+    const section = sections[type];
+    if (section.items.length) {
+      sectionHTML += `<div class="shop-section"><h4>${section.title}</h4>`;
+      section.items.forEach(item => {
+        sectionHTML += `<button class="shop-item" data-buy="${item.type}" data-id="${item.id}" data-cost="${item.cost}">${item.emoji} ${item.name} — ${item.cost} coins</button>`;
+      });
+      sectionHTML += '</div>';
+    }
+  });
+  const coinPacks = `<div class="shop-section"> <h4>Coin packs</h4> <button class="shop-item" data-buy="pack" data-amount="250" data-price="3,99">250 Nexie Coins €3,99</button> <button class="shop-item" data-buy="pack" data-amount="500" data-price="6,99">500 Nexie Coins €6,99</button> <button class="shop-item" data-buy="pack" data-amount="1000" data-price="11,99">1000 Nexie Coins €11,99</button> <button class="shop-item" data-buy="pack" data-amount="2500" data-price="24,99">2500 Nexie Coins €24,99</button> <button class="shop-item" data-buy="pack" data-amount="6000" data-price="49,99">6000 Nexie Coins €49,99</button> <button class="shop-item" data-buy="pack" data-amount="10000" data-price="79,99">10.000 Nexie Coins €79,99</button> <small class="shop-note">Simulatie: deze knoppen verhogen altijd je virtuele coins.</small> </div>`;
+  shopContainer.innerHTML = sectionHTML + coinPacks;
+};
 
+const renderAdminList = () => {
+  const adminList = document.getElementById('adminItemList');
+  if (!adminList) return;
+  adminList.innerHTML = shopItems.map((item, index) => `<div class="admin-item"> <span>${item.emoji} ${item.name} (${item.type})</span> <input type="number" value="${item.cost}" min="1" data-index="${index}" class="admin-cost"> <button class="btn btn-outline" data-delete="${index}">Delete</button> </div>`).join('');
+};
+
+document.getElementById('addAdminItem').addEventListener('click', () => {
+  const name = document.getElementById('adminItemName').value.trim();
+  const type = document.getElementById('adminItemType').value;
+  const cost = Number(document.getElementById('adminItemCost').value);
+  const emoji = document.getElementById('adminItemEmoji').value.trim();
+  if (!name || !cost || !emoji) {
+    gameStatus.textContent = 'Vul alle velden in.';
+    return;
+  }
+  const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  const newItem = { id, name, type, cost, emoji };
+  shopItems.push(newItem);
+  saveShopItems();
+  gameStatus.textContent = 'Item toegevoegd.';
+  document.getElementById('adminItemName').value = '';
+  document.getElementById('adminItemCost').value = '';
+  document.getElementById('adminItemEmoji').value = '';
+});
+
+document.addEventListener('change', (event) => {
+  if (event.target.classList.contains('admin-cost')) {
+    const index = Number(event.target.dataset.index);
+    const newCost = Number(event.target.value);
+    if (newCost >= 1) {
+      shopItems[index].cost = newCost;
+      saveShopItems();
+      gameStatus.textContent = 'Prijs bijgewerkt.';
+    }
+  }
+});
+
+document.addEventListener('click', (event) => {
+  if (event.target.dataset.delete !== undefined) {
+    const index = Number(event.target.dataset.delete);
+    shopItems.splice(index, 1);
+    saveShopItems();
+    gameStatus.textContent = 'Item verwijderd.';
+  }
+});
+
+renderShop();
+renderAdminList();
+
+// Shop handlers
+document.querySelectorAll(".shop-item").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const type = btn.dataset.buy;
+    if (type === "pack") {
+      const amount = Number(btn.dataset.amount || 0);
+      const price = btn.dataset.price || "";
+      updateBalance(amount, `Pack gekocht +${amount} coins`);
+      gameStatus.textContent = `Simulatie: â‚¬${price} pack toegevoegd.`;
+      return;
+    }
+
+    const cost = Number(btn.dataset.cost || 0);
+    const id = btn.dataset.id;
+    const item = shopItems.find(i => i.id === id);
+    if (!item) return;
+    const alreadyOwned = inventory.some(existing => existing.id === id);
+    if (type !== "loot" && type !== "pack" && alreadyOwned) {
+      gameStatus.textContent = "Item al in inventory.";
+      return;
+    }
+    if (type !== "loot" && type !== "pack" && !canAfford(cost)) return;
+
+    if (type === "powerup") {
+      const added = addUniqueItem({ ...item, rarity: "rare" });
+      if (added) gameStatus.textContent = "Power-up toegevoegd.";
+      return;
+    }
+
+    if (type === "theme") {
+      const added = addUniqueItem({ ...item, rarity: "epic" });
+      if (added) {
+        applyTheme(id);
+        gameStatus.textContent = "Theme geactiveerd.";
+      }
+      return;
+    }
+
+    if (type === "boost") {
+      const added = addUniqueItem({ ...item, rarity: "rare" });
+      if (added) gameStatus.textContent = "Boost toegevoegd.";
+      return;
+    }
+
+    if (type === "cosmetic") {
+      const added = addUniqueItem({ ...item, rarity: "common" });
+      if (added) gameStatus.textContent = "Cosmetic toegevoegd.";
+      return;
+    }
+
+    if (type === "frame") {
+      const added = addUniqueItem({ ...item, rarity: "rare" });
+      if (added) gameStatus.textContent = "Frame toegevoegd.";
+      return;
+    }
+
+    if (type === "sound") {
+      const added = addUniqueItem({ ...item, rarity: "common" });
+      if (added) gameStatus.textContent = "Sound pack toegevoegd.";
+      return;
+    }
+
+    if (type === "skin") {
+      const added = addUniqueItem({ ...item, rarity: "epic" });
+      if (added) gameStatus.textContent = "Skin toegevoegd.";
+      return;
+    }
+
+    if (type === "vip") {
+      if (addUniqueItem({ ...item, rarity: "legendary" })) {
+        vipActive = true;
+        localStorage.setItem(vipKey, "true");
+        gameStatus.textContent = "VIP actief. Daily bonus verhoogd.";
+      }
+      return;
+    }
+
+    if (type === "loot") {
+      const lootPool = [
+        { id: "dashShield", name: "Dash Shield", type: "powerup", rarity: "rare", emoji: "⚡" },
+        { id: "driveMagnet", name: "Drive Magnet", type: "powerup", rarity: "rare", emoji: "🧲" },
+        { id: "extraLife", name: "Extra Life", type: "boost", rarity: "rare", emoji: "❤️" },
+        { id: "slowMo", name: "Slow-Mo Token", type: "boost", rarity: "rare", emoji: "🕒" },
+        { id: "theme-neon", name: "Neon City", type: "theme", rarity: "epic", emoji: "🌌" },
+        { id: "theme-forest", name: "Pixel Forest", type: "theme", rarity: "epic", emoji: "🌲" },
+        { id: "skin-cyber", name: "Cyber Runner", type: "skin", rarity: "epic", emoji: "🧬" },
+        { id: "frame-gold", name: "Gold Frame", type: "frame", rarity: "legendary", emoji: "🖼️" },
+        { id: "avatar-arcade", name: "Arcade Avatar", type: "cosmetic", rarity: "common", emoji: "🕹️" },
+        { id: "badge-legend", name: "Legend Badge", type: "cosmetic", rarity: "rare", emoji: "🏅" },
+        { id: "trail-neon", name: "Neon Trail", type: "cosmetic", rarity: "epic", emoji: "✨" }
+      ];
+      const available = lootPool.filter(item => !inventory.some(existing => existing.id === item.id));
+      if (!available.length) {
+        gameStatus.textContent = "Alle loot items al in inventory.";
+        return;
+      }
+      if (!canAfford(cost)) return;
+      const reward = available[Math.floor(Math.random() * available.length)];
+      if (addUniqueItem(reward)) {
+        if (reward.type === "theme") applyTheme(reward.id);
+        gameStatus.textContent = `Loot box: ${reward.emoji} ${reward.name} (${reward.rarity})`;
+      }
+      return;
+    }
+  });
+});

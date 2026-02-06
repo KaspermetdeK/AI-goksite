@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexed Arcade — Friends & Chat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">N</div>
+      <div>
+        <strong>Nexed Arcade</strong>
+        <span>Vriendenlijst en chat (lokaal).</span>
+      </div>
+    </div>
+    <div class="wallet">
+      <a class="btn btn-outline" href="index.html">Terug naar games</a>
+    </div>
+  </header>
+
+  <main class="layout single">
+    <section class="arena">
+      <div class="arena-header">
+        <div>
+          <h1>Friends & Chat</h1>
+          <p>Voeg vrienden toe en start een chat. Alles blijft lokaal in je browser.</p>
+        </div>
+        <div class="arena-meta">
+          <span>Status</span>
+          <strong id="friendsStatus">Klaar</strong>
+        </div>
+      </div>
+
+      <div class="friends-grid">
+        <div class="friends-card">
+          <h3>Vriend toevoegen</h3>
+          <div class="friends-form">
+            <input id="friendName" type="text" placeholder="Naam van vriend">
+            <button class="btn btn-primary" id="addFriend">Toevoegen</button>
+          </div>
+          <div class="friends-list" id="friendsList"></div>
+        </div>
+
+        <div class="friends-card">
+          <h3>Chat</h3>
+          <div class="chat-meta">
+            <span>Actieve chat</span>
+            <strong id="activeFriend">Niemand</strong>
+          </div>
+          <div class="chat-window" id="chatWindow">Selecteer een vriend om te chatten.</div>
+          <div class="chat-form">
+            <input id="chatMessage" type="text" placeholder="Typ een bericht">
+            <button class="btn btn-outline" id="sendMessage">Verstuur</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="friends.js"></script>
+</body>
+</html>
